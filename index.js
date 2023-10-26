@@ -1,6 +1,7 @@
 import express from 'express';
 const app = express();
 import { PrismaClient } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
 app.use(express.json());
@@ -8,14 +9,16 @@ app.use(express.json());
 // Create a user api for sending data to database
 app.post("/api/v1/user", async (req, res) => {
     try {
-        const { firstName, lastName, age } = req.body;
-        const newUser = await prisma.User.create({ data: req.body })
+        const {firstName, lastName, age} = req.body;
+        const newUser = await prisma.User.create({ data : req.body
+        });       
         res.status(201).json({
             status: "success",
             data: newUser,
         })              
     } 
     catch (error) {
+        console.log(error);
         res.status(500).json({
             status: "failed",
             message: "Something went wrong while creating user"
@@ -81,6 +84,26 @@ app.delete("/api/v1/user/remove/:id", async (req, res) => {
             status: "failed",
             message: "Something went wrong while updating user"
         })                
+    }
+})
+
+// Creating a house api 
+app.post("/api/v1/house/create", async (req, res) => {
+    try {
+        const {address, wifiPassword, ownerId, builtById} = req.body;
+        const newHouse = await prisma.House.create({ data: req.body })
+        res.status(201).json({
+            status: 'success',
+            data: {
+                newHouse
+            }
+        })
+    } 
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Error while creating a house"
+        })
     }
 })
 
